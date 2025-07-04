@@ -18,7 +18,7 @@ DEFAULT_CONFIG = {
     ),
     # LLM settings
     "llm_provider": "bedrock",
-    "deep_think_llm": NOVA_RPO_MODEL_ID,
+    "deep_think_llm": CLAUDE_4_SONNET_MODEL_ID,
     "quick_think_llm": NOVA_LITE_MODEL_ID,
     # "deep_think_llm": "doubao-seed-1-6-thinking-250615",
     #  "deep_think_llm": "doubao-seed-1-6-250615",

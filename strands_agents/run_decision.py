@@ -35,7 +35,7 @@ def main():
     print("=" * 50)
 
     # Get the model
-    llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],model_id=DEFAULT_CONFIG["deep_think_llm"],max_tokens=10000)
+    llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],model_id=DEFAULT_CONFIG["deep_think_llm"],max_tokens=16000)
     quick_llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],thinking=False, model_id=DEFAULT_CONFIG["quick_think_llm"],max_tokens=10000)
 
     # Create trading system with reflection capabilities

@@ -208,16 +208,16 @@ class TradingAgentsGraph:
         
     def run(self, company_of_interest, trade_date, returns_losses=None):
         print("------------------# 1. Analysts gather information----------------------------")
-        # self.gather_information_step(company_of_interest, trade_date)
+        self.gather_information_step(company_of_interest, trade_date)
         
         print("------------------# 2. Research debate----------------------------")
         self.research_debate_step(company_of_interest, trade_date)
         
         print("------------------# 3. Trader makes a decision----------------------------")
-        # self.trader_decision_step(company_of_interest, trade_date)
+        self.trader_decision_step(company_of_interest, trade_date)
         
         print("------------------# 4. Risk debate----------------------------")
-        # final_decision = self.risk_debate_step(company_of_interest, trade_date)
+        final_decision = self.risk_debate_step(company_of_interest, trade_date)
         
         print (f"Job done, please find results")
         # return final_decision
