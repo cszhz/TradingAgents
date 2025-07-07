@@ -17,7 +17,7 @@
 graph TD
     A["1. 分析阶段 (Analysis)"] -- 综合分析报告 --> B["2. 决策阶段 (Decision-Making)"];
     B -- 初步交易决策 --> C["3. 风控阶段 (Risk Assessment)"];
-    C -- 最终交���建议 --> D{4. 反思与学习 (Reflection)};
+    C -- 最终交建议 --> D{4. 反思与学习 (Reflection)};
     
     subgraph "外部输入"
         direction LR
