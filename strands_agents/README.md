@@ -57,7 +57,7 @@ graph TD
     在项目根目录创建一个 `.env` 文件，并填入必要的 API 密钥。  
     需要：
     1. FINNHUB_API_KEY  (https://finnhub.io/)
-    2. 注册EXA 用于信息搜索 ([二选一](https://exa.ai/))
+    2. 注册EXA 用于信息搜索 (https://exa.ai/)
     ```
     # 
     FINNHUB_API_KEY=
