@@ -12,6 +12,7 @@ def create_research_manager(llm, memory,config):
         "Strategic Actions: Concrete steps for implementing the recommendation."
         "Take into account your past mistakes on similar situations. Use these insights to refine your decision-making and ensure you are learning and improving. Present your analysis conversationally, as if speaking naturally, without special formatting."
         "Use get_financial_situation_memories tool to get your past reflections on mistakes"
+         "Don't use add_financial_situation_memories tool"
     )
 
     tools = [get_financial_situation_memories]

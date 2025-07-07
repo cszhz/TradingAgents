@@ -1,12 +1,11 @@
 
 from strands import tool,Agent
 import chromadb
+from typing import List,Dict,Any
 from chromadb.config import Settings
 from openai import OpenAI
 import boto3
 import json
-
-from typing import Any
 from pydantic_core import core_schema
 class FinancialSituationMemory:
     @classmethod
@@ -30,13 +29,13 @@ class FinancialSituationMemory:
             # Initialize Bedrock client for embeddings
             self.bedrock_client = boto3.client(
                 'bedrock-runtime',
-                region_name=config.get("aws_region", "us-west-2")
+                region_name=config.get("aws_region", "us-east-1")
             )
         else:
             # Use OpenAI client for embeddings
             self.client = OpenAI(base_url=config["backend_url"])
         
-        self.chroma_client = chromadb.Client(Settings(allow_reset=True))
+        self.chroma_client = chromadb.PersistentClient(path=config['chromadb_path'], settings=Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.get_or_create_collection(name=name)
 
     def get_embedding(self, text):
@@ -92,7 +91,7 @@ class FinancialSituationMemory:
 
     def add_situations(self, situations_and_advice):
         """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
-
+        print(f"\n----------add_situations called with {len(situations_and_advice)} items\n")
         situations = []
         advice = []
         ids = []
@@ -134,14 +133,14 @@ class FinancialSituationMemory:
             )
 
         return matched_results
-
+    
 @tool
 def get_financial_situation_memories(current_situation: str, n_matches: int,agent: Agent):
     """Get memories from the financial situation memory. they are past reflections on mistakes
     
     Args:
-        current_situation: str, use this value to sementic search the memory bank to retrieve past reflections on mistakes
-        n_matches: int, defaut is 1
+        current_situation (str):  A detail description of current financial situation, including whatever information you have about the company and market, use this value to sementic search the memory bank to retrieve past reflections on mistakes
+        n_matches (int): defaut is 1
     """
     memory_name = agent.state.get("memory_name")
     config = agent.state.get("config")
@@ -149,75 +148,11 @@ def get_financial_situation_memories(current_situation: str, n_matches: int,agen
     return memory.get_memories(current_situation, n_matches) if memory else ""
 
 @tool
-def add_financial_situation_memories(situations_and_advice: list,agent: Agent):
+def add_financial_situation_memories(situations_and_advice: List[Dict[str,str]],agent: Agent):
     """Add memories to the financial situation memory. they are past reflections on mistakes
-    """
-    memory_name = agent.state.get("memory_name")
-    config = agent.state.get("config")
-    memory = FinancialSituationMemory(memory_name,config)
-    memory.add_situations(situations_and_advice)
-
-    def add_situations(self, situations_and_advice):
-        """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
-
-        situations = []
-        advice = []
-        ids = []
-        embeddings = []
-
-        offset = self.situation_collection.count()
-
-        for i, (situation, recommendation) in enumerate(situations_and_advice):
-            situations.append(situation)
-            advice.append(recommendation)
-            ids.append(str(offset + i))
-            embeddings.append(self.get_embedding(situation))
-
-        self.situation_collection.add(
-            documents=situations,
-            metadatas=[{"recommendation": rec} for rec in advice],
-            embeddings=embeddings,
-            ids=ids,
-        )
-
-    def get_memories(self, current_situation, n_matches=1):
-        """Find matching recommendations using OpenAI embeddings"""
-        query_embedding = self.get_embedding(current_situation)
-
-        results = self.situation_collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_matches,
-            include=["metadatas", "documents", "distances"],
-        )
-
-        matched_results = []
-        for i in range(len(results["documents"][0])):
-            matched_results.append(
-                {
-                    "matched_situation": results["documents"][0][i],
-                    "recommendation": results["metadatas"][0][i]["recommendation"],
-                    "similarity_score": 1 - results["distances"][0][i],
-                }
-            )
-
-        return matched_results
-
-@tool
-def get_financial_situation_memories(current_situation: str, n_matches: int,agent: Agent):
-    """Get memories from the financial situation memory. they are past reflections on mistakes
     
     Args:
-        current_situation: str, use this value to sementic search the memory bank to retrieve past reflections on mistakes
-        n_matches: int, defaut is 1
-    """
-    memory_name = agent.state.get("memory_name")
-    config = agent.state.get("config")
-    memory = FinancialSituationMemory(memory_name,config)
-    return memory.get_memories(current_situation, n_matches) if memory else ""
-
-@tool
-def add_financial_situation_memories(situations_and_advice: list,agent: Agent):
-    """Add memories to the financial situation memory. they are past reflections on mistakes
+        situations_and_advice (list): list, Parameter is a list of tuples (situation, rec), financial situations and their corresponding recommendation advice. The situation is a detail description of current financial situation, including whatever information you have about the company and market,
     """
     memory_name = agent.state.get("memory_name")
     config = agent.state.get("config")

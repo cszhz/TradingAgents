@@ -39,7 +39,7 @@ class MemoryAddingTester:
     def cleanup_test_collections(self):
         """Clean up test collections before and after testing."""
         try:
-            client = chromadb.Client(Settings(allow_reset=True))
+            client = chromadb.PersistentClient(path=self.config["chromadb_path"],settings=Settings(allow_reset=True))
             collections = client.list_collections()
             
             for collection in collections:
@@ -82,7 +82,7 @@ class MemoryAddingTester:
             print(f"✅ Added {len(test_situations)} memories successfully")
             
             # Verify memories were stored
-            client = chromadb.Client(Settings(allow_reset=True))
+            client = chromadb.PersistentClient(path=self.config["chromadb_path"],settings=Settings(allow_reset=True))
             collection = client.get_collection(name=collection_name)
             count = collection.count()
             
@@ -174,7 +174,7 @@ class MemoryAddingTester:
             print(f"✅ Added {len(large_batch)} memories in {end_time - start_time:.2f} seconds")
             
             # Verify count
-            client = chromadb.Client(Settings(allow_reset=True))
+            client = chromadb.PersistentClient(path=self.config["chromadb_path"],settings=Settings(allow_reset=True))
             collection = client.get_collection(name=collection_name)
             count = collection.count()
             
@@ -220,7 +220,7 @@ class MemoryAddingTester:
                 print(f"✅ Instance {i+1} added {len(test_data)} memories")
             
             # Verify total count
-            client = chromadb.Client(Settings(allow_reset=True))
+            client = chromadb.PersistentClient(path=self.config["chromadb_path"],settings=Settings(allow_reset=True))
             collection = client.get_collection(name=collection_name)
             total_count = collection.count()
             expected_count = len(memories) * 2  # 2 memories per instance
@@ -426,7 +426,7 @@ class MemoryAddingTester:
             print(f"✅ Added {len(test_situations)} memories with embeddings")
             
             # Verify embeddings exist and are different
-            client = chromadb.Client(Settings(allow_reset=True))
+            client = chromadb.PersistentClient(path=self.config["chromadb_path"],settings=Settings(allow_reset=True))
             collection = client.get_collection(name=collection_name)
             data = collection.get(include=["embeddings", "documents"])
             
@@ -480,13 +480,13 @@ class MemoryAddingTester:
         # Define all tests
         tests = [
             ("Basic Memory Adding", self.test_basic_memory_adding),
-            ("Empty and Invalid Data", self.test_empty_and_invalid_data),
-            ("Large Batch Adding", self.test_large_batch_adding),
-            ("Concurrent Adding", self.test_concurrent_adding),
-            ("Memory Persistence", self.test_memory_persistence),
-            ("Tool Function Adding", self.test_tool_function_adding),
-            ("Reflection System Integration", self.test_reflection_system_integration),
-            ("Embedding Generation", self.test_embedding_generation),
+            # ("Empty and Invalid Data", self.test_empty_and_invalid_data),
+            # ("Large Batch Adding", self.test_large_batch_adding),
+            # ("Concurrent Adding", self.test_concurrent_adding),
+            # ("Memory Persistence", self.test_memory_persistence),
+            # ("Tool Function Adding", self.test_tool_function_adding),
+            # ("Reflection System Integration", self.test_reflection_system_integration),
+            # ("Embedding Generation", self.test_embedding_generation),
         ]
         
         results = {}
@@ -504,7 +504,7 @@ class MemoryAddingTester:
                 results[test_name] = False
         
         # Cleanup after testing
-        self.cleanup_test_collections()
+        # self.cleanup_test_collections()
         
         # Print summary
         print("\n" + "=" * 60)

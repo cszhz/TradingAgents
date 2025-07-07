@@ -10,6 +10,8 @@ def create_risky_debator(llm):
         model=llm,
         name="Risky Risk Analyst",
         system_prompt=system_message,
+        callback_handler=None,#disable as it will run in parallel
+
     )
 
     return agent

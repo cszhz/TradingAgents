@@ -10,6 +10,7 @@ def create_neutral_debator(llm):
         model=llm,
         name="Neutral Risk Analyst",
         system_prompt=system_message,
+        callback_handler=None,#disable as it will run in parallel
     )
 
     return agent

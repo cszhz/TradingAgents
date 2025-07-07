@@ -11,6 +11,7 @@ def create_risk_manager(llm, memory,config):
         "3. **Refine the Trader's Plan**: Start with the trader's original plan, and adjust it based on the analysts' insights."
         "4. **Learn from Past Mistakes**: Use lessons from past mistakes to address prior misjudgments and improve the decision you are making now to make sure you don't make a wrong BUY/SELL/HOLD call that loses money."
         "Use get_financial_situation_memories tool to get your past reflections on mistakes"
+         "Don't use add_financial_situation_memories tool"
         "## Outputs:"
         "- Detailed reasoning anchored in the debate and past reflections."
         "- A clear and actionable recommendation: Buy, Sell, or Hold."

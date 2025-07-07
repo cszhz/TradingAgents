@@ -17,17 +17,32 @@ from strands_agents.agents import (
 )
 from strands_agents.tools.memory import FinancialSituationMemory
 from strands_agents.default_config import DEFAULT_CONFIG
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os,base64
+from strands.telemetry import StrandsTelemetry
 
+public_key = os.environ.get("LANGFUSE_PUBLIC_KEY")
+secret_key = os.environ.get("LANGFUSE_SECRET_KEY")
+langfuse_endpoint =  os.environ.get("LANGFUSE_HOST")
+# Set up endpoint
+if public_key and secret_key and langfuse_endpoint:
+    print("-------------------start trace-------------------")
+    otel_endpoint = langfuse_endpoint + "/api/public/otel"
+    auth_token = base64.b64encode(f"{public_key}:{secret_key}".encode()).decode()
+    os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = otel_endpoint
+    os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {auth_token}"
+    strands_telemetry = StrandsTelemetry()
+    # strands_telemetry.setup_meter(enable_console_exporter=False, enable_otlp_exporter=True) 
+    strands_telemetry.setup_otlp_exporter()      # Send traces to OTLP endpoint
+    # strands_telemetry.setup_console_exporter()   # Print traces to console
 
 class TradingAgentsGraph:
-    def __init__(self, llm, quick_llm=None, online=False,working_dir='./results'):
+    def __init__(self, llm, quick_llm=None, online=False):
         self.config = DEFAULT_CONFIG.copy()
         self.llm = llm
         self.quick_llm = quick_llm
         self.online = online
-        self.working_dir = working_dir
+        self.working_dir = DEFAULT_CONFIG['results_dir']
         # Create agents
         self.fundamentals_analyst = create_fundamentals_analyst(quick_llm, online)
         self.market_analyst = create_market_analyst(quick_llm, online)
@@ -48,8 +63,8 @@ class TradingAgentsGraph:
         self.reflector = TradingReflector(llm, self.config)
         
         #check if folder exsit
-        if not os.path.exists(working_dir):
-            os.mkdir(working_dir)
+        if not os.path.exists(self.working_dir):
+            os.mkdir(self.working_dir)
 
 
     def save_as_file(self,text,prefix='',file_name=''):
@@ -101,6 +116,7 @@ class TradingAgentsGraph:
             agents=[
                 self.bull_researcher,
                 self.bear_researcher,
+                # self.research_manager  # optional: summarizer 也可以参加讨论
             ],
             summarizer_agent=self.research_manager,
             coordination="competitive"
@@ -111,14 +127,22 @@ class TradingAgentsGraph:
         news_report = self.read_file(prefix,"news_report.txt")
         social_media_report = self.read_file(prefix,"social_media_report.txt")
 
-        investment_plan = research_debate.run(
-            f"Debate and decide on an investment plan for {company_of_interest} based on the following reports:\n\n"
+        investment_plan,messages = research_debate.run(
+            f"Debate and decide on an investment plan for {company_of_interest} for the trade date {trade_date} based on the following reports:\n\n"
             f"Fundamentals Report:\n{fundamentals_report}\n\n"
             f"Market Report:\n{market_report}\n\n"
             f"News Report:\n{news_report}\n\n"
             f"Social Media Report:\n{social_media_report}"
         )
-        print(investment_plan)
+        
+        # Saving history for relection
+        bull_history = "\n\n".join(messages[self.bull_researcher.name])
+        bear_history = "\n\n".join(messages[self.bear_researcher.name])
+        self.save_as_file(bull_history,prefix,"bull_history.txt")
+        self.save_as_file(bear_history,prefix,"bear_history.txt")
+
+
+        # print(investment_plan)
         self.save_as_file(str(investment_plan),prefix,"investment_plan.txt")
         return investment_plan
     
@@ -130,9 +154,9 @@ class TradingAgentsGraph:
 
        
         trader_decision = self.trader(
-            f"Based on the following investment plan, what is your final trade decision?\n\n{investment_plan}"
+            f"Based on the following investment plan for {company_of_interest} for the trade date {trade_date}, what is your final trade decision?\n\n{investment_plan}"
         )
-        print(trader_decision)
+        # print(trader_decision)
         self.save_as_file(str(trader_decision),prefix,"trader_decision.txt")
         return trader_decision
         
@@ -148,14 +172,15 @@ class TradingAgentsGraph:
                 self.risky_debator,
                 self.safe_debator,
                 self.neutral_debator,
+                # self.risk_manager # optional: summarizer 也可以参加讨论
             ],
             summarizer_agent=self.risk_manager,
             coordination="competitive"
         )
-        final_decision = risk_debate.run(
-            f"Debate the risk of the following trade decision and provide a final recommendation:\n\n{trader_decision}"
+        final_decision,_ = risk_debate.run(
+            f"Debate the risk of the following trade decision for {company_of_interest} for the trade date {trade_date} and provide a final recommendation:\n\n{trader_decision}"
         )
-        print(final_decision)
+        # print(final_decision)
         self.save_as_file(str(final_decision),prefix,"final_decision.txt")
         return final_decision
     
@@ -178,8 +203,8 @@ class TradingAgentsGraph:
             "fundamentals_report": self.read_file(prefix,"fundamentals_report.txt") ,
             "trader_investment_plan": self.read_file(prefix,"trader_decision.txt") ,
             "investment_debate_state": {
-                "bull_history": self.read_file(prefix,"investment_plan.txt") ,
-                "bear_history": self.read_file(prefix,"investment_plan.txt") ,
+                "bull_history": self.read_file(prefix,"bull_history.txt") ,
+                "bear_history": self.read_file(prefix,"bear_history.txt") ,
                 "judge_decision": self.read_file(prefix,"investment_plan.txt")
             },
             "risk_debate_state": {
@@ -206,18 +231,22 @@ class TradingAgentsGraph:
         return reflections
             
         
-    def run(self, company_of_interest, trade_date, returns_losses=None):
-        print("------------------# 1. Analysts gather information----------------------------")
-        self.gather_information_step(company_of_interest, trade_date)
+    def run(self, company_of_interest, trade_date, begin_step=1,end_step=99):
+        if begin_step == 1 and end_step >= 1:
+            print("------------------# 1. Analysts gather information----------------------------")
+            self.gather_information_step(company_of_interest, trade_date)
         
-        print("------------------# 2. Research debate----------------------------")
-        self.research_debate_step(company_of_interest, trade_date)
+        if begin_step <= 2 and end_step >= 2:
+            print("------------------# 2. Research debate----------------------------")
+            self.research_debate_step(company_of_interest, trade_date)
         
-        print("------------------# 3. Trader makes a decision----------------------------")
-        self.trader_decision_step(company_of_interest, trade_date)
+        if begin_step <= 3 and end_step >= 3:
+            print("------------------# 3. Trader makes a decision----------------------------")
+            self.trader_decision_step(company_of_interest, trade_date)
         
-        print("------------------# 4. Risk debate----------------------------")
-        final_decision = self.risk_debate_step(company_of_interest, trade_date)
+        if begin_step <= 4 and end_step >= 4:
+            print("------------------# 4. Risk debate----------------------------")
+            final_decision = self.risk_debate_step(company_of_interest, trade_date)
         
         print (f"Job done, please find results")
         # return final_decision

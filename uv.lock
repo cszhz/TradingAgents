@@ -2828,6 +2828,12 @@ wheels = [
 ]
 
 [[package]]
+name = "otel"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d0/d7/5103f29719f7aa1491e7c5cd129fab4f3b9b7f37b83b3f88de4d5efd426f/otel-0.0.1.tar.gz", hash = "sha256:8cb03ea02f00a1205ecb5f57061bf8f049e64dbbe290c732126cece09bd299a5", size = 672 }
+
+[[package]]
 name = "overrides"
 version = "7.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3919,7 +3925,7 @@ wheels = [
 
 [[package]]
 name = "strands-agents"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
@@ -3932,9 +3938,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6e/f1/2a839086ce3f963b52055585a90b771c17d8fa484346d7555141ea447117/strands_agents-0.2.0.tar.gz", hash = "sha256:a918cfe342868b4071fb4c19c5af7b1b2e224d368fb7ae6e4de5dbb014d706e5", size = 172662 }
+sdist = { url = "https://files.pythonhosted.org/packages/33/9e/0185642f7b4ff5078471b7dc0faf5d26971a1e546c0ec2bc0322cc8c7bf4/strands_agents-0.2.1.tar.gz", hash = "sha256:a816fcbe630446e372b7d66545b37322e4f7417e988f1fe062ebeb8a66b36d5a", size = 177074 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/0a/defe3494172a5288c8ef644ee0d2a9eade833abfadf39c568c8dcc0c4cef/strands_agents-0.2.0-py3-none-any.whl", hash = "sha256:c1ce3039b405477c5a76f96409f2600cdf5efea5c6f14b67da0ef7796aea7c67", size = 127212 },
+    { url = "https://files.pythonhosted.org/packages/9a/30/01b0c88c60c197c798c220cbbe71474cac332dafdb00548f6bfc2f0f5cdb/strands_agents-0.2.1-py3-none-any.whl", hash = "sha256:3e155441c68020aba15c357a1f3a59b60726ebadac4e1e1814003b8675ab10ac", size = 130184 },
 ]
 
 [[package]]
@@ -4219,6 +4225,7 @@ dependencies = [
     { name = "langgraph" },
     { name = "mcp", extra = ["cli"] },
     { name = "openai" },
+    { name = "otel" },
     { name = "pandas" },
     { name = "parsel" },
     { name = "praw" },
@@ -4255,6 +4262,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=0.4.8" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.10.1" },
     { name = "openai" },
+    { name = "otel", specifier = ">=0.0.1" },
     { name = "pandas" },
     { name = "parsel" },
     { name = "praw" },
@@ -4266,7 +4274,7 @@ requires-dist = [
     { name = "rich" },
     { name = "setuptools" },
     { name = "stockstats" },
-    { name = "strands-agents", specifier = ">=0.2.0" },
+    { name = "strands-agents", specifier = ">=0.2.1" },
     { name = "strands-agents-tools" },
     { name = "streamlit" },
     { name = "tqdm" },

@@ -20,15 +20,15 @@ from strands_agents.tools.memory import FinancialSituationMemory
 from strands_agents.default_config import DEFAULT_CONFIG
 import chromadb
 from chromadb.config import Settings
+config = DEFAULT_CONFIG.copy()
 
 
 def view_all_collections():
     """View all available memory collections and their basic info."""
     print("🔍 TradingAgents Memory Collections")
     print("=" * 50)
-    
     try:
-        client = chromadb.Client(Settings(allow_reset=True))
+        client = chromadb.PersistentClient(path=config["chromadb_path"],settings=Settings(allow_reset=True))
         collections = client.list_collections()
         
         if not collections:
@@ -68,7 +68,7 @@ def view_collection_details(collection_name: str):
         memory = FinancialSituationMemory(collection_name, DEFAULT_CONFIG)
         
         # Get collection stats
-        client = chromadb.Client(Settings(allow_reset=True))
+        client = chromadb.PersistentClient(path=config["chromadb_path"],settings=Settings(allow_reset=True))
         collection = client.get_collection(name=collection_name)
         count = collection.count()
         
@@ -93,9 +93,14 @@ def view_collection_details(collection_name: str):
             recommendation = meta.get("recommendation", "") if meta else ""
             print(f"  💡 Recommendation: {recommendation[:200]}{'...' if len(recommendation) > 200 else ''}")
             
-            if data.get("embeddings") and i < len(data["embeddings"]):
-                embedding_preview = data["embeddings"][i][:5]
-                print(f"  🔢 Embedding preview: {embedding_preview}")
+            # Fix the array ambiguity issue
+            embeddings = data.get("embeddings")
+            if embeddings is not None and len(embeddings) > i:
+                try:
+                    embedding_preview = embeddings[i][:5] if len(embeddings[i]) > 5 else embeddings[i]
+                    print(f"  🔢 Embedding preview: {embedding_preview}")
+                except (IndexError, TypeError):
+                    print(f"  🔢 Embedding: Available but cannot preview")
             
             print(f"  📏 Lengths: Situation={len(doc)}, Recommendation={len(recommendation)}")
             print("-" * 60)
@@ -139,7 +144,7 @@ def analyze_collection_patterns(collection_name: str):
     print("=" * 50)
     
     try:
-        client = chromadb.Client(Settings(allow_reset=True))
+        client = chromadb.PersistentClient(path=config["chromadb_path"],settings=Settings(allow_reset=True))
         collection = client.get_collection(name=collection_name)
         count = collection.count()
         
@@ -213,7 +218,7 @@ def export_collection(collection_name: str, output_file: str = None):
     print("=" * 50)
     
     try:
-        client = chromadb.Client(Settings(allow_reset=True))
+        client = chromadb.PersistentClient(path=config["chromadb_path"],settings=Settings(allow_reset=True))
         collection = client.get_collection(name=collection_name)
         
         # Get all data
@@ -227,12 +232,26 @@ def export_collection(collection_name: str, output_file: str = None):
         }
         
         # Process each memory
-        for i in range(len(data.get("documents", []))):
+        documents = data.get("documents", [])
+        metadatas = data.get("metadatas", [])
+        embeddings = data.get("embeddings", [])
+        ids = data.get("ids", [])
+        
+        for i in range(len(documents)):
+            # Safely handle embeddings which might be numpy arrays
+            embedding_data = []
+            if embeddings is not None and len(embeddings) > 0 and i < len(embeddings):
+                try:
+                    # Convert to list if it's a numpy array or similar
+                    embedding_data = list(embeddings[i]) if embeddings[i] is not None else []
+                except (TypeError, ValueError):
+                    embedding_data = []
+            
             memory = {
-                "id": data.get("ids", [None])[i],
-                "situation": data.get("documents", [None])[i],
-                "recommendation": data.get("metadatas", [{}])[i].get("recommendation", "") if data.get("metadatas") else "",
-                "embedding": data.get("embeddings", [[]])[i] if data.get("embeddings") else []
+                "id": ids[i] if i < len(ids) else None,
+                "situation": documents[i] if i < len(documents) else "",
+                "recommendation": metadatas[i].get("recommendation", "") if i < len(metadatas) and metadatas[i] else "",
+                "embedding": embedding_data
             }
             export_data["memories"].append(memory)
         
@@ -246,6 +265,55 @@ def export_collection(collection_name: str, output_file: str = None):
         print(f"❌ Error exporting collection: {e}")
 
 
+def clear_collection(collection_name: str, confirm: bool = False, backup: bool = False):
+    """Clear all memories from a collection."""
+    print(f"🗑️  Clearing collection: {collection_name}")
+    print("=" * 50)
+    
+    try:
+        client = chromadb.PersistentClient(path=config["chromadb_path"],settings=Settings(allow_reset=True))
+        
+        # Check if collection exists
+        try:
+            collection = client.get_collection(name=collection_name)
+        except Exception:
+            print(f"❌ Collection '{collection_name}' not found.")
+            return
+        
+        # Get current count
+        current_count = collection.count()
+        
+        if current_count == 0:
+            print(f"📭 Collection '{collection_name}' is already empty.")
+            return
+        
+        print(f"⚠️  This will permanently delete {current_count} memories from '{collection_name}'")
+        
+        # Create backup if requested
+        if backup:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_file = f"{collection_name}_backup_before_clear_{timestamp}.json"
+            print(f"💾 Creating backup: {backup_file}")
+            export_collection(collection_name, backup_file)
+            print()
+        
+        if not confirm:
+            response = input("Are you sure you want to continue? (yes/no): ").lower().strip()
+            if response not in ['yes', 'y']:
+                print("❌ Operation cancelled.")
+                return
+        
+        # Delete the collection and recreate it (this clears all data)
+        client.delete_collection(name=collection_name)
+        client.create_collection(name=collection_name)
+        
+        print(f"✅ Successfully cleared {current_count} memories from '{collection_name}'")
+        print(f"📁 Collection '{collection_name}' is now empty and ready for new memories.")
+        
+    except Exception as e:
+        print(f"❌ Error clearing collection: {e}")
+
+
 def main():
     """Main function with simple command-line interface."""
     if len(sys.argv) == 1:
@@ -256,6 +324,7 @@ def main():
         print(f"  python {sys.argv[0]} search <collection_name> <query>  # Search memories")
         print(f"  python {sys.argv[0]} analyze <collection_name>  # Analyze patterns")
         print(f"  python {sys.argv[0]} export <collection_name>   # Export to JSON")
+        print(f"  python {sys.argv[0]} clear <collection_name>    # Clear all memories")
         return
     
     command = sys.argv[1].lower()
@@ -276,6 +345,14 @@ def main():
         output_file = sys.argv[3] if len(sys.argv) > 3 else None
         export_collection(collection_name, output_file)
     
+    elif command == "clear" and len(sys.argv) > 2:
+        collection_name = sys.argv[2]
+        # Check for --force flag to skip confirmation
+        force = "--force" in sys.argv or "-f" in sys.argv
+        # Check for --backup flag to create backup before clearing
+        backup = "--backup" in sys.argv or "-b" in sys.argv
+        clear_collection(collection_name, confirm=force, backup=backup)
+    
     elif command == "list":
         view_all_collections()
     
@@ -287,6 +364,7 @@ def main():
         print("  search <collection_name> <query>       # Search memories")
         print("  analyze <collection_name>               # Analyze patterns")
         print("  export <collection_name> [filename]     # Export to JSON")
+        print("  clear <collection_name> [--force] [--backup] # Clear all memories (use --force to skip confirmation, --backup to create backup)")
 
 
 if __name__ == "__main__":

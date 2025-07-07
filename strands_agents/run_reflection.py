@@ -19,13 +19,14 @@ def main():
     
     parser = argparse.ArgumentParser(description="TradingAgents Memory Inspector")
     parser.add_argument("--company", "-c", help="股票代码，如:‘AMZN’")
-    parser.add_argument("--trade_date", "-d", help="截止的交易日 格式 YYYY-MM-DD")
+    parser.add_argument("--trade_date", "-d", help="交易日 格式 YYYY-MM-DD")
+    parser.add_argument("--outcome", "-o", help="真实的交易结果")
     args = parser.parse_args()
-    print("TradingAgents with Strands - Reflection Demo")
+    print("TradingAgents with Strands - Reflection")
     print("=" * 50)
 
     # Get the model
-    llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],model_id=DEFAULT_CONFIG["deep_think_llm"])
+    llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],model_id=DEFAULT_CONFIG["deep_think_llm"],max_tokens=16000)
     quick_llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],model_id=DEFAULT_CONFIG["quick_think_llm"],max_tokens=10000)
 
     # Create trading system with reflection capabilities
@@ -37,11 +38,12 @@ def main():
    
     # Example 1: Successful trade reflection
     print("\n--- Example 1: Reflecting on a Successful Trade ---")
-    successful_outcome = (
-        "Trade Result: +12% return over 2 weeks. "
-        "Stock moved from $180 to $201.60. "
-        "Excellent timing on entry, strong fundamentals confirmed."
-    )
+    successful_outcome = args.outcome
+    # successful_outcome = (
+    #     "Trade Result: +1% return over 1 weeks. "
+    #     "Stock moved from $157.99 to $159.34. "
+    #     "Excellent timing on entry, strong fundamentals confirmed."
+    # )
     
     success_reflections = ta.reflection_step(company, trade_date, successful_outcome)
     print("✅ Successful trade reflection completed and stored in memory.")

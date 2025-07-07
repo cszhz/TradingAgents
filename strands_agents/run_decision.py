@@ -8,20 +8,18 @@ sys.path.insert(0, str(parent_dir))
 from graph.trading_graph import TradingAgentsGraph
 from strands_agents.default_config import DEFAULT_CONFIG
 import os,base64
-from strands.telemetry import StrandsTelemetry
+import logging
+
 from dotenv import load_dotenv
 load_dotenv()
 
-public_key = os.environ.get("LANGFUSE_PUBLIC_KEY")
-secret_key = os.environ.get("LANGFUSE_SECRET_KEY")
-langfuse_endpoint =  os.environ.get("LANGFUSE_HOST")
-# Set up endpoint
-if public_key and secret_key and langfuse_endpoint:
-    print("-------------------start trace-------------------")
-    otel_endpoint = langfuse_endpoint + "/api/public/otel/v1/traces"
-    auth_token = base64.b64encode(f"{public_key}:{secret_key}".encode()).decode()
-    os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = otel_endpoint
-    os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {auth_token}"
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(pathname)s:%(lineno)d - %(message)s',
+)
+logger = logging.getLogger(__name__)
+
+
 
 def main():
     import argparse
@@ -29,6 +27,9 @@ def main():
     parser = argparse.ArgumentParser(description="TradingAgents Memory Inspector")
     parser.add_argument("--company", "-c", help="股票代码，如:‘AMZN’")
     parser.add_argument("--trade_date", "-d", help="截止的交易日 格式 YYYY-MM-DD")
+    parser.add_argument("--begin_step", "-s", type=int, default=1)    
+    parser.add_argument("--end_step", "-e", type=int, default=99)    
+    parser.add_argument("--online", "-o", type=bool, default=True)  
     args = parser.parse_args()
     
     print("TradingAgents with Strands - Decision Demo")
@@ -39,14 +40,16 @@ def main():
     quick_llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],thinking=False, model_id=DEFAULT_CONFIG["quick_think_llm"],max_tokens=10000)
 
     # Create trading system with reflection capabilities
-    ta = TradingAgentsGraph(llm=llm,quick_llm=quick_llm, online=False)
+    ta = TradingAgentsGraph(llm=llm,quick_llm=quick_llm, online=args.online)
     
     # Run trading analysis
     company = args.company
     trade_date = args.trade_date
+    begin_step = args.begin_step
+    end_step = args.end_step
     
     print(f"Analyzing {company} for {trade_date}...")
-    final_decision = ta.run(company, trade_date)
+    final_decision = ta.run(company, trade_date,begin_step,end_step)
     
     print(f"\nFinal Trading Decision:{final_decision}")
 

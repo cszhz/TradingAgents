@@ -8,7 +8,7 @@ import os
 import yfinance as yf
 from openai import OpenAI
 
-from tradingagents.dataflows.interface import (
+from strands_agents.dataflows.interface import (
     get_finnhub_news as get_finnhub_news_orig,
     get_finnhub_company_insider_sentiment as get_finnhub_company_insider_sentiment_orig,
     get_finnhub_company_insider_transactions as get_finnhub_company_insider_transactions_orig,
@@ -25,7 +25,7 @@ from tradingagents.dataflows.interface import (
     get_global_news_openai as get_global_news_openai_orig,
     get_fundamentals_openai as get_fundamentals_openai_orig,
 )
-from tradingagents.default_config import DEFAULT_CONFIG
+from strands_agents.default_config import DEFAULT_CONFIG
 
 config = DEFAULT_CONFIG
 

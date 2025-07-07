@@ -1,7 +1,7 @@
 from strands import Agent, tool
 from strands_agents.tools.memory import add_financial_situation_memories
 from typing import Dict, Any, List, Tuple
-from tradingagents.default_config import DEFAULT_CONFIG
+from strands_agents.default_config import DEFAULT_CONFIG
 
 
 def create_reflector(llm, config):

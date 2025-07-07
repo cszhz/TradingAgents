@@ -9,3 +9,5 @@ eval_data/
 .env
 .pytest_cache
 results/
+data_cache/
+chroma/

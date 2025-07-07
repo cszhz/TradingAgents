@@ -11,7 +11,8 @@ def create_bull_researcher(llm, memory,config):
         "- Positive Indicators: Use financial health, industry trends, and recent positive news as evidence."
         "- Bear Counterpoints: Critically analyze the bear argument with specific data and sound reasoning, addressing concerns thoroughly and showing why the bull perspective holds stronger merit."
         "- Engagement: Present your argument in a conversational style, engaging directly with the bear analyst's points and debating effectively rather than just listing data."
-        "Use get_financial_situation_memories tool to get your past reflections on mistakes"
+        "Use get_financial_situation_memories tool to get your past reflections on mistakes."
+        "Don't use add_financial_situation_memories tool"
     )
 
     tools = [get_financial_situation_memories]
@@ -20,6 +21,7 @@ def create_bull_researcher(llm, memory,config):
         model=llm,
         tools=tools,
         name="Bull Analyst",
+        callback_handler=None,#disable as it will run in parallel
         system_prompt=system_message,
     )
     agent.state.set("memory_name",memory)

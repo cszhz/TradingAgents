@@ -23,10 +23,10 @@ class ConversationSwarm:
                     result = future.result()
                     for key in messages.keys():
                         if not key == agent.name:
-                            messages[key].append(f"# From {agent.name}: \n{result}")
+                            messages[key].append(f"# From {agent.name}: \n<input>\n{result}\n</input>")
+                            print(messages[key][-1])
                 except Exception as exc:
                     print(f'Agent {agent.name} generated an exception: {exc}')
-        
         # Phase 2: Each agent refines based on input from others
         if self.coordination == "collaborative":
             role = f"you are Collaborative Agent - Focus on building upon others' insights"
@@ -35,22 +35,28 @@ class ConversationSwarm:
         else:  # hybrid
             role = f"you are Hybrid Agent- Balance cooperation and innovation"
         for i, agent in enumerate(self.agents):
-            prompt = f"{task}\n\n{role}\nConsider these messages from other agents:\n" + "\n\n".join(messages[agent.name])
+            prompt = f"{task}\n\n{role}\nConsider these messages from other agents:\n<messages>" + "\n\n".join(messages[agent.name]) + "\n</messages>"
             result = agent(prompt)
-            messages[self.summarizer_agent.name].append(f"# From {agent.name} (Phase 2):\n{result}")
-            
+            for key in messages.keys():
+                if not key == agent.name:
+                    messages[key].append(f"# From {agent.name} (Phase 2): \n<input>\n{result}\n</input>")
+            print(messages[self.summarizer_agent.name][-1])
+        
         # Final phase: Summarizer creates the final solution
         summarizer_prompt = f"""
-Original query: {task}
+Original query: 
+<query>
+{task}
+</query>
 
 Please synthesize the following inputs from all agents into a comprehensive final solution:
-
+<inputs>
 {"\n\n".join(messages[self.summarizer_agent.name])}
-
+</inputs>
 Create a well-structured final answer that incorporates the research findings, 
 creative ideas, and addresses the critical feedback.
 """
         print(f"-------summarizer_prompt-------------:\n{summarizer_prompt}")
         final_solution = self.summarizer_agent(summarizer_prompt)
 
-        return final_solution
+        return final_solution,messages
