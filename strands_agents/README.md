@@ -15,9 +15,9 @@
 
 ```mermaid
 graph TD
-    A["1. 分析阶段 (Analysis)"] -- 综合分析报告 --> B["2. 决策阶段 (Decision-Making)"];
-    B -- 初步交易决策 --> C["3. 风控阶段 (Risk Assessment)"];
-    C -- 最终交建议 --> D{4. 反思与学习 (Reflection)};
+    A["1.分析阶段 (Analysis)"] -- 综合分析报告 --> B["2.决策阶段 (Decision-Making)"];
+    B -- 初步交易决策 --> C["3.风控阶段 (Risk Assessment)"];
+    C -- 最终交易建议 --> D["4.反思与学习 (Reflection)"];
     
     subgraph "外部输入"
         direction LR
@@ -34,6 +34,7 @@ graph TD
     end
 
     style E fill:#ccf,stroke:#333,stroke-width:2px
+
 ```
 
 ## 如何使用
