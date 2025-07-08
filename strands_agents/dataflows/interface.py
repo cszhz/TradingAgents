@@ -21,6 +21,12 @@ from strands import Agent
 from strands.models.openai import OpenAIModel
 from strands import Agent
 from strands.tools.mcp import MCPClient
+from pathlib import Path
+import sys
+parent_dir = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(parent_dir))
+from strands_agents.model_utils import get_model
+from strands_agents.default_config import DEFAULT_CONFIG
 
 def get_finnhub_news(
     ticker: Annotated[
@@ -712,45 +718,38 @@ def agent_call_with_search_mcp(prompt):
     config = get_config()
     stdio_mcp_client = None
     # exa_search
-    if config.get("EXA_API_KEY"):
+    if config.get("search_mcp_provider") == "exa":
+        print("use exa_search ")
         stdio_mcp_client = MCPClient(lambda: stdio_client(
             StdioServerParameters(
                 command="npx", 
                 args=["-y","exa-mcp-server"],  
                     env={
-                    "EXA_API_KEY": config["EXA_API_KEY"]
+                    "EXA_API_KEY": config["search_mcp_api_key"]
                     }
                 )
         ))
-    elif config.get("TAVILY_API_KEY"):
+    # tavily_search
+    elif config.get("search_mcp_provider") == 'tavily':
+        print("use tavily_search ")
         stdio_mcp_client = MCPClient(lambda: stdio_client(
             StdioServerParameters(
                 command="npx", 
                 args=["-y","tavily-mcp@latest"],  
                     env={
-                    "TAVILY_API_KEY": config["TAVILY_API_KEY"]
+                    "TAVILY_API_KEY": config["search_mcp_api_key"]
                     }
                 )
         ))
-    # tavily_search
-    MODEL = OpenAIModel(
-        client_args={
-            "api_key": os.environ.get("OPENAI_API_KEY"),
-            "base_url": config["backend_url"],
-        },
-        model_id=config["quick_think_llm"],
-        params={
-            "max_tokens": 4000,
-            "temperature": 0.7,
-        }
-    )
+    quick_llm = get_model(provider=DEFAULT_CONFIG["llm_provider"],thinking=False, model_id=DEFAULT_CONFIG["quick_think_llm"],max_tokens=8000)
     # Create an agent with MCP tools
     with stdio_mcp_client:
         # Get the tools from the MCP server
         tools = stdio_mcp_client.list_tools_sync()
         # Create an agent with these tools
-        agent = Agent(model=MODEL,
+        agent = Agent(model=quick_llm,
                       system_prompt="You are a information researcher",
+                      load_tools_from_directory=False,
                       tools=tools)
         response = agent(prompt)
     

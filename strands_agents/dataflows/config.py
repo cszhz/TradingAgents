@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+parent_dir = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(parent_dir))
 import strands_agents.default_config as default_config
 from typing import Dict, Optional
 

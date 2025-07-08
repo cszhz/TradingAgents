@@ -22,6 +22,7 @@ def create_research_manager(llm, memory,config):
         tools=tools,
         name="portfolio manager",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
     
     agent.state.set("memory_name",memory)

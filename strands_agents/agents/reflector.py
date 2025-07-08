@@ -50,6 +50,7 @@ Adhere strictly to these instructions, and ensure your output is detailed, accur
         model=llm,
         name="trading_reflector",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
     
     agent.state.set("config", config)

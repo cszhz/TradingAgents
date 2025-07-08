@@ -24,6 +24,7 @@ def create_risk_manager(llm, memory,config):
         tools=tools,
         name="Risk Management Judge",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
     agent.state.set("memory_name",memory)
     agent.state.set("config",config)

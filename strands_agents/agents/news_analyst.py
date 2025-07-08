@@ -30,6 +30,7 @@ def create_news_analyst(llm, online=False):
         tools=tools,
         name="news researcher",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
 
     return agent

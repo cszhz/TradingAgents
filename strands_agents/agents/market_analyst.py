@@ -53,6 +53,7 @@ Volume-Based Indicators:
         tools=tools,
         name="Market Analyst",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
 
     return agent

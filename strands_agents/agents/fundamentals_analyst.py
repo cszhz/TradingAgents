@@ -35,6 +35,7 @@ def create_fundamentals_analyst(llm, online=False):
         tools=tools,
         name="fundamental researcher",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
 
     return agent

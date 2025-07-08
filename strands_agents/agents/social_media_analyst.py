@@ -29,6 +29,7 @@ def create_social_media_analyst(llm, online=False):
         tools=tools,
         name="social media analyst",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
 
     return agent

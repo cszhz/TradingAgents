@@ -23,6 +23,7 @@ def create_bull_researcher(llm, memory,config):
         name="Bull Analyst",
         callback_handler=None,#disable as it will run in parallel
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
     agent.state.set("memory_name",memory)
     agent.state.set("config",config)

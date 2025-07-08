@@ -17,6 +17,7 @@ def create_trader(llm, memory,config):
         tools=tools,
         name="trading analyst",
         system_prompt=system_message,
+        load_tools_from_directory=False,
     )
     agent.state.set("memory_name",memory)
     agent.state.set("config",config)

@@ -17,6 +17,9 @@ DEFAULT_CONFIG = {
         os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
         "dataflows/data_cache",
     ),
+    # search mcp, tavily or exa
+    "search_mcp_provider":"tavily",
+    "search_mcp_api_key":os.getenv("TAVILY_API_KEY", None),
     # LLM settings
     "llm_provider": "bedrock",
     "deep_think_llm": CLAUDE_4_SONNET_MODEL_ID,
