@@ -36,7 +36,7 @@ DEFAULT_CONFIG = {
     # LLM provider and model settings
     "llm_provider": "bedrock",  # Options: "bedrock", "openai", "anthropic"
     "deep_think_llm": CLAUDE_37_SONNET_MODEL_ID,  # Model for complex reasoning tasks
-    "quick_think_llm": CLAUDE_4_SONNET_MODEL_ID,  # Model for fast responses
+    "quick_think_llm": CLAUDE_37_SONNET_MODEL_ID,  # Model for fast responses
     "backend_url": "https://ark.cn-beijing.volces.com/api/v3/",  # Custom API endpoint
     
     # Embedding model settings
