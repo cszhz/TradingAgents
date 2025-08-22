@@ -524,11 +524,13 @@ def get_stock_stats_indicators_window(
     before = curr_date - relativedelta(days=look_back_days)
 
     if not online:
+        print("zz","get_stock_stats_indicators_window")
         # read from YFin data
         data = pd.read_csv(
             os.path.join(
                 DATA_DIR,
-                f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
+                f"market_data/price_data/{symbol}-YFin-data-2010-08-21-2025-08-21.csv",
+                #f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
             )
         )
         data["Date"] = pd.to_datetime(data["Date"], utc=True)
@@ -685,16 +687,18 @@ def get_YFin_data(
     end_date: Annotated[str, "End date in yyyy-mm-dd format"],
 ) -> str:
     # read in data
+    print(symbol,start_date,end_date,DATA_DIR) #./FR1-data
     data = pd.read_csv(
         os.path.join(
             DATA_DIR,
-            f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
+            f"market_data/price_data/{symbol}-YFin-data-2010-08-21-2025-08-21.csv",
+            #f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
         )
     )
-
-    if end_date > "2025-03-25":
+    
+    if end_date > "2025-08-21":
         raise Exception(
-            f"Get_YFin_Data: {end_date} is outside of the data range of 2015-01-01 to 2025-03-25"
+            f"Get_YFin_Data: {end_date} is outside of the data range of 2010-08-21 to 2025-08-21"
         )
 
     # Extract just the date part for comparison

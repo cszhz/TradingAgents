@@ -33,7 +33,8 @@ class StockstatsUtils:
                 data = pd.read_csv(
                     os.path.join(
                         data_dir,
-                        f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
+                        f"{symbol}-YFin-data-2010-08-21-2025-08-21.csv",
+                        #f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
                     )
                 )
                 df = wrap(data)

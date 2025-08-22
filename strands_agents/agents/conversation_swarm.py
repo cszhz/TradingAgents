@@ -14,7 +14,8 @@ class ConversationSwarm:
         for i, agent in enumerate(self.agents):
             messages[agent.name]=[]
         # Phase 1 Initial analysis by each specialized agent (parallel)
-        with ThreadPoolExecutor(max_workers=len(self.agents)) as executor:
+        with ThreadPoolExecutor(max_workers=1) as executor:  #avoid throttling
+        #with ThreadPoolExecutor(max_workers=len(self.agents)) as executor:
             future_to_agent = {executor.submit(agent, task): agent for agent in self.agents}
             
             for future in as_completed(future_to_agent):
@@ -43,6 +44,7 @@ class ConversationSwarm:
             print(messages[self.summarizer_agent.name][-1])
         
         # Final phase: Summarizer creates the final solution
+        '''
         summarizer_prompt = f"""
 Original query: 
 <query>
@@ -56,6 +58,23 @@ Please synthesize the following inputs from all agents into a comprehensive fina
 Create a well-structured final answer that incorporates the research findings, 
 creative ideas, and addresses the critical feedback.
 """
+        '''
+
+        joined_msgs = "\n\n".join(messages[self.summarizer_agent.name])
+        summarizer_prompt = f"""
+Original query:
+<query>
+{task}
+</query>
+
+Please synthesize the following inputs from all agents into a comprehensive final solution:
+<inputs>
+{joined_msgs}
+</inputs>
+Create a well-structured final answer that incorporates the research findings,
+creative ideas, and addresses the critical feedback.
+"""
+
         print(f"-------summarizer_prompt-------------:\n{summarizer_prompt}")
         final_solution = self.summarizer_agent(summarizer_prompt)
 

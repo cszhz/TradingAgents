@@ -1,7 +1,7 @@
 
 from strands import Agent
 from strands_agents.tools.memory import get_financial_situation_memories
-from strands_tools.swarm import SwarmAgent,Swarm
+#from strands_tools.swarm import SwarmAgent,Swarm
 
 def create_bear_researcher(llm, memory, config):
     system_message = (

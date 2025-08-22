@@ -99,6 +99,10 @@ def getNewsData(query, start_date, end_date):
             if not next_link:
                 break
 
+            #fetch top 10 news
+            if len(news_results) >= 10:
+                break
+
             page += 1
 
         except Exception as e:

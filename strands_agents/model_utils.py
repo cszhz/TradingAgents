@@ -68,4 +68,16 @@ def get_model(provider='bedrock',model_id=CLAUDE_37_SONNET_MODEL_ID,thinking=Tru
                 "temperature": temperature,
             }
         )
-    
+
+def save_as_file(text,working_dir,prefix='',file_name=''):
+    if not os.path.exists(os.path.join(working_dir,prefix)):
+        os.mkdir(os.path.join(working_dir,prefix))
+    with open(os.path.join(working_dir,prefix,file_name), "w") as f:
+        f.write(text)
+        
+def read_file(working_dir,prefix='',file_name=''):
+    if os.path.exists(os.path.join(working_dir, prefix, file_name)):
+        with open(os.path.join(working_dir,prefix, file_name), "r") as f:
+            return f.read()
+    else:
+        raise ValueError(f"{os.path.join(working_dir,prefix, file_name)} not exist")
