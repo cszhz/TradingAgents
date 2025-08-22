@@ -126,11 +126,22 @@ export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
 
 ### CLI Usage
 
-You can also try out the CLI directly by running:
+You can run TradingAgents using the simple CLI:
 ```bash
-python -m cli.main
+python cli_simple.py AAPL --date 2024-12-01 --online
 ```
-You will see a screen where you can select your desired tickers, date, LLMs, research depth, etc.
+
+Or use the main entry point:
+```bash
+python run.py
+```
+
+The simple CLI supports various options:
+- `--date`: Analysis date (default: today)
+- `--online`: Use real-time data instead of cached data
+- `--provider`: LLM provider (bedrock or openai)
+- `--deep-model`: Model for complex reasoning
+- `--quick-model`: Model for quick analysis
 
 <p align="center">
   <img src="assets/cli/cli_init.png" width="100%" style="display: inline-block; margin: 0 2%;">
@@ -157,34 +168,43 @@ We built TradingAgents with LangGraph to ensure flexibility and modularity. We u
 To use TradingAgents inside your code, you can import the `tradingagents` module and initialize a `TradingAgentsGraph()` object. The `.propagate()` function will return a decision. You can run `main.py`, here's also a quick example:
 
 ```python
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from graph.trading_graph import TradingAgentsGraph
+from default_config import DEFAULT_CONFIG
+from model_utils import get_model
 
-ta = TradingAgentsGraph(debug=True, config=DEFAULT_CONFIG.copy())
+# Initialize models
+llm = get_model(provider="bedrock", model_id="claude-3-sonnet")
+quick_llm = get_model(provider="bedrock", model_id="claude-3-haiku", thinking=False)
 
-# forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
+# Create TradingAgents graph
+ta = TradingAgentsGraph(llm=llm, quick_llm=quick_llm, config=DEFAULT_CONFIG.copy())
+
+# Run analysis
+final_state, decision = ta.propagate("NVDA", "2024-05-10")
 print(decision)
 ```
 
 You can also adjust the default configuration to set your own choice of LLMs, debate rounds, etc.
 
 ```python
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from graph.trading_graph import TradingAgentsGraph
+from default_config import DEFAULT_CONFIG
+from model_utils import get_model
 
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["quick_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["max_debate_rounds"] = 1  # Increase debate rounds
-config["online_tools"] = True # Use online tools or cached data
+config["max_debate_rounds"] = 3  # Increase debate rounds
+config["online_tools"] = True    # Use real-time data
+
+# Initialize models with custom settings
+llm = get_model(provider="openai", model_id="gpt-4o")
+quick_llm = get_model(provider="openai", model_id="gpt-4o-mini", thinking=False)
 
 # Initialize with custom config
-ta = TradingAgentsGraph(debug=True, config=config)
+ta = TradingAgentsGraph(llm=llm, quick_llm=quick_llm, online=True, config=config)
 
-# forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
+# Run analysis
+final_state, decision = ta.propagate("NVDA", "2024-05-10")
 print(decision)
 ```
 
