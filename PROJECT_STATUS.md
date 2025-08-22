@@ -36,7 +36,6 @@ TradingAgents/
 ├── 🕸️  graph/                  # Main workflow orchestrator
 │   ├── __init__.py
 │   └── trading_graph.py       # TradingAgentsGraph class
-├── 🖥️  cli/                    # Original CLI (preserved)
 └── 🎨 assets/                 # Documentation images
 ```
 

@@ -1,197 +1,136 @@
-<p align="center">
-  <img src="assets/TauricResearch.png" style="width: 60%; height: auto;">
-</p>
+# TradingAgents: Multi-Agent Trading Framework
 
-<div align="center" style="line-height: 1;">
-  <a href="https://arxiv.org/abs/2412.20138" target="_blank"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2412.20138-B31B1B?logo=arxiv"/></a>
-  <a href="https://discord.com/invite/hk9PGKShPK" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-TradingResearch-7289da?logo=discord&logoColor=white&color=7289da"/></a>
-  <a href="./assets/wechat.png" target="_blank"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-TauricResearch-brightgreen?logo=wechat&logoColor=white"/></a>
-  <a href="https://x.com/TauricResearch" target="_blank"><img alt="X Follow" src="https://img.shields.io/badge/X-TauricResearch-white?logo=x&logoColor=white"/></a>
-  <br>
-  <a href="https://github.com/TauricResearch/" target="_blank"><img alt="Community" src="https://img.shields.io/badge/Join_GitHub_Community-TauricResearch-14C290?logo=discourse"/></a>
-</div>
+TradingAgents is a sophisticated multi-agent framework for financial market analysis and trading decisions. The system decomposes complex trading tasks into specialized roles, utilizing collaborative work, debates, and reflection mechanisms to explore more robust and intelligent trading strategies.
 
-<div align="center">
-  <!-- Keep these links. Translations will automatically update with the README. -->
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=de">Deutsch</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=es">Español</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=fr">français</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ja">日本語</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ko">한국어</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=pt">Português</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ru">Русский</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=zh">中文</a>
-</div>
+## 🚀 Key Features
 
----
+- **Multi-Agent Architecture**: System includes analysts, researchers, traders, and risk managers, each with specialized roles
+- **Debate-Driven Decisions**: Bull vs Bear researcher debates and risk assessment discussions enhance decision robustness
+- **Continuous Learning**: Post-trade reflection and memory storage enable continuous improvement and evolution
+- **Modular Design**: Highly modular agents and workflows, easy to extend and customize
+- **Real-time & Historical Data**: Support for both live market data and cached historical analysis
 
-# TradingAgents: Multi-Agents LLM Financial Trading Framework 
+## 🔄 Workflow Overview
 
-> 🎉 **TradingAgents** officially released! We have received numerous inquiries about the work, and we would like to express our thanks for the enthusiasm in our community.
->
-> So we decided to fully open-source the framework. Looking forward to building impactful projects with you!
+The framework operates through four core stages with a memory-driven learning loop:
 
-<div align="center">
-<a href="https://www.star-history.com/#TauricResearch/TradingAgents&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date" />
-   <img alt="TradingAgents Star History" src="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date" style="width: 80%; height: auto;" />
- </picture>
-</a>
-</div>
+```mermaid
+graph TD
+    A["1. Analysis Stage"] -- "Market & News Reports" --> B["2. Research Debate"];
+    B -- "Investment Recommendation" --> C["3. Trading Decision"];
+    C -- "Final Trade Proposal" --> D["4. Execution & Learning"];
+    
+    subgraph "External Inputs"
+        direction LR
+        Input("Stock Ticker & Date") --> A;
+        Result("Trade Results") --> D;
+    end
+    
+    subgraph "Learning Loop"
+        direction LR
+        D -- "Lessons Learned" --> E[(Memory System)];
+        E -.-> A;
+        E -.-> B;
+        E -.-> C;
+    end
 
-<div align="center">
+    style E fill:#ccf,stroke:#333,stroke-width:2px
+```
 
-🚀 [TradingAgents](#tradingagents-framework) | ⚡ [Installation & CLI](#installation-and-cli) | 🎬 [Demo](https://www.youtube.com/watch?v=90gr5lwjIho) | 📦 [Package Usage](#tradingagents-package) | 🤝 [Contributing](#contributing) | 📄 [Citation](#citation)
+## 📦 Installation
 
-</div>
+### Prerequisites
+- Python 3.8+
+- Required API keys (see Environment Setup)
 
-## TradingAgents Framework
-
-TradingAgents is a multi-agent trading framework that mirrors the dynamics of real-world trading firms. By deploying specialized LLM-powered agents: from fundamental analysts, sentiment experts, and technical analysts, to trader, risk management team, the platform collaboratively evaluates market conditions and informs trading decisions. Moreover, these agents engage in dynamic discussions to pinpoint the optimal strategy.
-
-<p align="center">
-  <img src="assets/schema.png" style="width: 100%; height: auto;">
-</p>
-
-> TradingAgents framework is designed for research purposes. Trading performance may vary based on many factors, including the chosen backbone language models, model temperature, trading periods, the quality of data, and other non-deterministic factors. [It is not intended as financial, investment, or trading advice.](https://tauric.ai/disclaimer/)
-
-Our framework decomposes complex trading tasks into specialized roles. This ensures the system achieves a robust, scalable approach to market analysis and decision-making.
-
-### Analyst Team
-- Fundamentals Analyst: Evaluates company financials and performance metrics, identifying intrinsic values and potential red flags.
-- Sentiment Analyst: Analyzes social media and public sentiment using sentiment scoring algorithms to gauge short-term market mood.
-- News Analyst: Monitors global news and macroeconomic indicators, interpreting the impact of events on market conditions.
-- Technical Analyst: Utilizes technical indicators (like MACD and RSI) to detect trading patterns and forecast price movements.
-
-<p align="center">
-  <img src="assets/analyst.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-### Researcher Team
-- Comprises both bullish and bearish researchers who critically assess the insights provided by the Analyst Team. Through structured debates, they balance potential gains against inherent risks.
-
-<p align="center">
-  <img src="assets/researcher.png" width="70%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-### Trader Agent
-- Composes reports from the analysts and researchers to make informed trading decisions. It determines the timing and magnitude of trades based on comprehensive market insights.
-
-<p align="center">
-  <img src="assets/trader.png" width="70%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-### Risk Management and Portfolio Manager
-- Continuously evaluates portfolio risk by assessing market volatility, liquidity, and other risk factors. The risk management team evaluates and adjusts trading strategies, providing assessment reports to the Portfolio Manager for final decision.
-- The Portfolio Manager approves/rejects the transaction proposal. If approved, the order will be sent to the simulated exchange and executed.
-
-<p align="center">
-  <img src="assets/risk.png" width="70%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-## Installation and CLI
-
-### Installation
-
-Clone TradingAgents:
+### Quick Start
 ```bash
+# Clone the repository
 git clone https://github.com/TauricResearch/TradingAgents.git
 cd TradingAgents
-```
 
-Create a virtual environment in any of your favorite environment managers:
-```bash
-conda create -n tradingagents python=3.13
-conda activate tradingagents
-```
-
-Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### Required APIs
-
-You will also need the FinnHub API for financial data. All of our code is implemented with the free tier.
-```bash
-export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
-```
-
-You will need the OpenAI API for all the agents.
-```bash
-export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
-```
-
-### CLI Usage
-
-You can run TradingAgents using the simple CLI:
-```bash
-python cli_simple.py AAPL --date 2024-12-01 --online
-```
-
-Or use the main entry point:
-```bash
+# Set up environment variables (see below)
+# Run analysis
 python run.py
 ```
 
-The simple CLI supports various options:
-- `--date`: Analysis date (default: today)
+### Environment Setup
+Create a `.env` file in the project root with the following API keys:
+
+```bash
+# Required APIs
+FINNHUB_API_KEY=your_finnhub_key_here
+OPENAI_API_KEY=your_openai_key_here
+
+# AWS Bedrock (if using Bedrock models)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+
+# Optional: Search APIs
+TAVILY_API_KEY=your_tavily_key_here
+EXA_API_KEY=your_exa_key_here
+
+# Optional: Telemetry tracking
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+## 🖥️ Usage Options
+
+### 1. Main Entry Point (Demo Workflow)
+```bash
+python run.py
+```
+- Demonstrates complete trading analysis workflow
+- Analyzes AMZN stock by default (configurable in code)
+- Shows step-by-step progress with detailed output
+- Saves all reports and decisions to organized directories
+
+### 2. Simple CLI (Flexible Analysis)
+```bash
+# Basic usage
+python cli_simple.py AAPL
+
+# Advanced usage with options
+python cli_simple.py TSLA --date 2024-12-01 --online --provider openai --deep-model gpt-4o
+```
+
+**CLI Options:**
+- `--date`: Analysis date in YYYY-MM-DD format (default: today)
 - `--online`: Use real-time data instead of cached data
-- `--provider`: LLM provider (bedrock or openai)
-- `--deep-model`: Model for complex reasoning
-- `--quick-model`: Model for quick analysis
+- `--provider`: LLM provider - `bedrock` or `openai` (default: bedrock)
+- `--deep-model`: Model for complex reasoning tasks
+- `--quick-model`: Model for quick analysis tasks
 
-<p align="center">
-  <img src="assets/cli/cli_init.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-An interface will appear showing results as they load, letting you track the agent's progress as it runs.
-
-<p align="center">
-  <img src="assets/cli/cli_news.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-<p align="center">
-  <img src="assets/cli/cli_transaction.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-## TradingAgents Package
-
-### Implementation Details
-
-We built TradingAgents with LangGraph to ensure flexibility and modularity. We utilize `o1-preview` and `gpt-4o` as our deep thinking and fast thinking LLMs for our experiments. However, for testing purposes, we recommend you use `o4-mini` and `gpt-4.1-mini` to save on costs as our framework makes **lots of** API calls.
-
-### Python Usage
-
-To use TradingAgents inside your code, you can import the `tradingagents` module and initialize a `TradingAgentsGraph()` object. The `.propagate()` function will return a decision. You can run `main.py`, here's also a quick example:
-
+### 3. Python API (Programmatic Usage)
 ```python
 from graph.trading_graph import TradingAgentsGraph
-from default_config import DEFAULT_CONFIG
 from model_utils import get_model
+from default_config import DEFAULT_CONFIG
 
 # Initialize models
 llm = get_model(provider="bedrock", model_id="claude-3-sonnet")
 quick_llm = get_model(provider="bedrock", model_id="claude-3-haiku", thinking=False)
 
 # Create TradingAgents graph
-ta = TradingAgentsGraph(llm=llm, quick_llm=quick_llm, config=DEFAULT_CONFIG.copy())
+ta = TradingAgentsGraph(llm=llm, quick_llm=quick_llm)
 
-# Run analysis
-final_state, decision = ta.propagate("NVDA", "2024-05-10")
+# Run complete analysis
+final_state, decision = ta.propagate("AAPL", "2024-12-01")
 print(decision)
 ```
 
-You can also adjust the default configuration to set your own choice of LLMs, debate rounds, etc.
-
+**Custom Configuration:**
 ```python
 from graph.trading_graph import TradingAgentsGraph
 from default_config import DEFAULT_CONFIG
 from model_utils import get_model
 
-# Create a custom config
+# Create custom config
 config = DEFAULT_CONFIG.copy()
 config["max_debate_rounds"] = 3  # Increase debate rounds
 config["online_tools"] = True    # Use real-time data
@@ -204,30 +143,119 @@ quick_llm = get_model(provider="openai", model_id="gpt-4o-mini", thinking=False)
 ta = TradingAgentsGraph(llm=llm, quick_llm=quick_llm, online=True, config=config)
 
 # Run analysis
-final_state, decision = ta.propagate("NVDA", "2024-05-10")
-print(decision)
+final_state, decision = ta.propagate("NVDA", "2024-12-01")
 ```
 
-> For `online_tools`, we recommend enabling them for experimentation, as they provide access to real-time data. The agents' offline tools rely on cached data from our **Tauric TradingDB**, a curated dataset we use for backtesting. We're currently in the process of refining this dataset, and we plan to release it soon alongside our upcoming projects. Stay tuned!
-
-You can view the full list of configurations in `tradingagents/default_config.py`.
-
-## Contributing
-
-We welcome contributions from the community! Whether it's fixing a bug, improving documentation, or suggesting a new feature, your input helps make this project better. If you are interested in this line of research, please consider joining our open-source financial AI research community [Tauric Research](https://tauric.ai/).
-
-## Citation
-
-Please reference our work if you find *TradingAgents* provides you with some help :)
+## 🏗️ Project Structure
 
 ```
-@misc{xiao2025tradingagentsmultiagentsllmfinancial,
-      title={TradingAgents: Multi-Agents LLM Financial Trading Framework}, 
-      author={Yijia Xiao and Edward Sun and Di Luo and Wei Wang},
-      year={2025},
-      eprint={2412.20138},
-      archivePrefix={arXiv},
-      primaryClass={q-fin.TR},
-      url={https://arxiv.org/abs/2412.20138}, 
-}
+TradingAgents/
+├── 🚀 run.py                   # Main entry point with demo workflow
+├── 💻 cli_simple.py           # Simple command-line interface
+├── ⚙️  default_config.py       # Configuration with detailed comments
+├── 🤖 model_utils.py          # Model utilities and file I/O
+├── 📦 requirements.txt        # All project dependencies
+├── 🤝 agents/                 # Trading agents with comprehensive docs
+│   ├── market_analyst.py      # Technical analysis and market trends
+│   ├── news_analyst.py        # News and macroeconomic analysis
+│   ├── bull_researcher.py     # Bullish investment advocacy
+│   ├── bear_researcher.py     # Risk-focused analysis
+│   ├── research_manager.py    # Debate coordination and synthesis
+│   ├── trader.py              # Final trading decisions
+│   └── conversation_swarm.py  # Multi-agent debate orchestration
+├── 🛠️  tools/                  # Tools and utilities
+│   ├── toolkit.py             # Data fetching and analysis tools
+│   └── memory.py              # Agent memory and learning system
+├── 📊 dataflows/              # Data processing and API interfaces
+├── 🕸️  graph/                  # Main workflow orchestrator
+│   └── trading_graph.py       # TradingAgentsGraph main class
+└── 🎨 assets/                 # Documentation images and resources
 ```
+
+## 🤖 Agent Roles
+
+### Analysis Team
+- **Market Analyst**: Analyzes technical indicators, price movements, and market trends
+- **News Analyst**: Processes news events, macroeconomic data, and market sentiment
+
+### Research Team  
+- **Bull Researcher**: Advocates for positive investment positions with growth-focused analysis
+- **Bear Researcher**: Provides risk-focused analysis and cautious investment perspectives
+- **Research Manager**: Coordinates debates and synthesizes team recommendations
+
+### Trading Team
+- **Trader**: Makes final trading decisions with risk management and execution planning
+
+### Support Systems
+- **Conversation Swarm**: Manages multi-agent debates with competitive/collaborative modes
+- **Memory System**: Stores and retrieves lessons learned from past trading decisions
+
+## 📊 Output and Results
+
+All analysis results are automatically saved to the `results/` directory:
+
+```
+results/
+└── TICKER_DATE/
+    ├── market_report.txt       # Technical analysis results
+    ├── news_report.txt         # News and sentiment analysis
+    ├── bull_history.txt        # Bull researcher arguments
+    ├── bear_history.txt        # Bear researcher arguments
+    ├── investment_plan.txt     # Research team recommendation
+    └── trader_decision.txt     # Final trading decision
+```
+
+## 🔧 Configuration Options
+
+The `default_config.py` file contains comprehensive configuration options:
+
+- **LLM Settings**: Provider, model IDs, thinking modes
+- **Debate Parameters**: Number of rounds, discussion depth
+- **Data Sources**: Online vs cached data, API configurations
+- **Memory Settings**: ChromaDB paths, embedding models
+- **Output Settings**: Results directories, file formats
+
+## 🧪 Testing and Validation
+
+To verify the installation and setup:
+
+```bash
+# Test basic functionality
+python -c "from default_config import DEFAULT_CONFIG; print('✅ Configuration loaded')"
+
+# Test model initialization
+python -c "from model_utils import get_model; print('✅ Model utils working')"
+
+# Test agent imports
+python -c "from agents import create_market_analyst; print('✅ Agents imported')"
+
+# Run a quick analysis
+python cli_simple.py SPY --date 2024-12-01
+```
+
+## 📚 Documentation
+
+- **REFACTORING_SUMMARY.md**: Detailed documentation of recent code reorganization
+- **PROJECT_STATUS.md**: Current project status and quality assurance
+- **Code Comments**: Comprehensive English documentation throughout the codebase
+- **Docstrings**: Detailed function and class documentation
+
+## 🤝 Contributing
+
+We welcome contributions! The codebase is well-organized with:
+- Clear separation of concerns between agents, tools, and workflows
+- Comprehensive documentation and comments
+- Modular design for easy extension
+- Multiple entry points for different use cases
+
+## ⚠️ Disclaimer
+
+TradingAgents is designed for research and educational purposes. Trading performance may vary based on many factors including model selection, market conditions, and data quality. This framework is not intended as financial, investment, or trading advice.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**Built with ❤️ by the TradingAgents team**
