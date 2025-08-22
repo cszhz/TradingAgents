@@ -68,7 +68,7 @@ def main():
     market_agent = create_market_analyst(quick_llm, False)
     prompt = f"Analyze the market for {company_of_interest} for the trade date {trade_date}"
     result = market_agent(prompt)
-    save_as_file(str(result), prefix, "market_report.txt")
+    save_as_file(str(result),working_dir, prefix, "market_report.txt")
     print("Market analysis completed.")
 
     # Step 2: News Analysis
@@ -77,7 +77,7 @@ def main():
     news_analyst_agent = create_news_analyst(quick_llm, online)
     prompt = f"Analyze the news for {company_of_interest} for the trade date {trade_date}"
     result = news_analyst_agent(prompt)
-    save_as_file(str(result), prefix, "news_report.txt")
+    save_as_file(str(result), working_dir,prefix, "news_report.txt")
     print("News analysis completed.")
 
     # Step 3: Research Team Debate
