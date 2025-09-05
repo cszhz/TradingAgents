@@ -7,8 +7,6 @@ and positive market indicators while countering bearish arguments.
 """
 
 from strands import Agent
-from tools.memory import get_financial_situation_memories
-
 
 def create_bull_researcher(llm, memory, config):
     """
@@ -85,21 +83,21 @@ def create_bull_researcher(llm, memory, config):
         5. Maintain professional tone while being persuasive
         6. Focus on actionable insights and clear investment rationale
 
-        **Tools Available:**
-        - get_financial_situation_memories: Retrieve past reflections and lessons learned
-        - Note: Do NOT use add_financial_situation_memories during debates
+        **Hand-off Guidelines:**
+        - You should first give your own analysis, and then directly hand off to the relevant researcher when you need to.
+        - If another researcher hasn't provided the final/completed analysis, you can directly hand off to the relevant researcher when needed. Otherwise, you cannot hand off to them.
+
 
         Remember: Your goal is to build the strongest possible case for investment while 
         maintaining intellectual honesty and acknowledging legitimate concerns.
+
+        Need to Write your final analysis!
         """
     )
-
-    tools = [get_financial_situation_memories]
 
     # Create and configure the agent
     agent = Agent(
         model=llm,
-        tools=tools,
         name="Bull Researcher",
         callback_handler=None,  # Disabled for parallel execution in debates
         system_prompt=system_message,

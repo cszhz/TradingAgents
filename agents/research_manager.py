@@ -7,8 +7,6 @@ The agent acts as a portfolio manager and debate facilitator.
 """
 
 from strands import Agent
-from tools.memory import get_financial_situation_memories
-
 
 def create_research_manager(llm, memory, config):
     """
@@ -105,12 +103,9 @@ def create_research_manager(llm, memory, config):
         """
     )
 
-    tools = [get_financial_situation_memories]
-
     # Create and configure the agent
     agent = Agent(
         model=llm,
-        tools=tools,
         name="Research Manager",
         system_prompt=system_message,
         load_tools_from_directory=False,

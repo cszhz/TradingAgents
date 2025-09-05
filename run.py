@@ -98,18 +98,16 @@ def main():
     news_report = read_file(working_dir, prefix, "news_report.txt")
 
     # Run the debate
-    investment_plan, messages = research_debate.run(
-        f"Debate and decide on an investment plan for {company_of_interest} "
+    investment_plan, bull_history, bear_history = research_debate.run(
+        f"collaborative multi-agent analysis and decide on an investment plan for {company_of_interest} "
         f"for the trade date {trade_date} based on the following reports:\n\n"
         f"Market Report:\n{market_report}\n\n"
         f"News Report:\n{news_report}"
     )
 
     # Save debate history and investment plan
-    bull_history = "\n\n".join(messages[bull_researcher.name])
-    bear_history = "\n\n".join(messages[bear_researcher.name])
-    save_as_file(bull_history, working_dir, prefix, "bull_history.txt")
-    save_as_file(bear_history, working_dir, prefix, "bear_history.txt")
+    save_as_file(bull_history, working_dir, prefix, "bull_final_analysis.txt")
+    save_as_file(bear_history, working_dir, prefix, "bear_final_analysis.txt")
     save_as_file(str(investment_plan), working_dir, prefix, "investment_plan.txt")
     print("Research team debate completed.")
 
