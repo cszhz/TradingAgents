@@ -19,6 +19,7 @@ NOVA_RPO_MODEL_ID = 'amazon.nova-pro-v1:0'
 NOVA_LITE_MODEL_ID = 'amazon.nova-lite-v1:0'
 NOVA_PREMIER_MODEL_ID = 'us.amazon.nova-premier-v1:0'
 
+EMBEDDING_MODEL_ID="amazon.titan-embed-text-v2:0"
 
 
 DEFAULT_CONFIG = {
@@ -38,13 +39,13 @@ DEFAULT_CONFIG = {
     
     # LLM provider and model settings
     "llm_provider": "bedrock",  # Options: "bedrock", "openai", "anthropic"
-    "deep_think_llm": NOVA_LITE_MODEL_ID,  # Model for complex reasoning tasks
-    "quick_think_llm": NOVA_LITE_MODEL_ID,  # Model for fast responses
+    "deep_think_llm": NOVA_RPO_MODEL_ID,  # Model for complex reasoning tasks
+    "quick_think_llm": NOVA_RPO_MODEL_ID,  # Model for fast responses
     "backend_url": "https://ark.cn-beijing.volces.com/api/v3/",  # Custom API endpoint
     
     # Embedding model settings
     "embedding_provider": "bedrock",  # Options: "bedrock", "openai"
-    "embedding_model": "amazon.titan-embed-text-v2:0",
+    "embedding_model": EMBEDDING_MODEL_ID,
     "aws_region": "us-east-1",  # AWS region for Bedrock services
     
     # Agent debate and discussion settings

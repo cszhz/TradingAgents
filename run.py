@@ -44,7 +44,7 @@ def main():
     llm = get_model(
         provider=DEFAULT_CONFIG["llm_provider"],
         model_id=DEFAULT_CONFIG["deep_think_llm"],
-        max_tokens=16000
+        max_tokens=10000
     )
     quick_llm = get_model(
         provider=DEFAULT_CONFIG["llm_provider"],
@@ -64,6 +64,7 @@ def main():
     print(f"Starting analysis for {company_of_interest} on {trade_date}")
 
     online = True
+    '''
     # Step 1: Market Analysis
     print("Step 1: Running market analysis...")
     market_agent = create_market_analyst(quick_llm, online)
@@ -79,7 +80,7 @@ def main():
     result = news_analyst_agent(prompt)
     save_as_file(str(result), working_dir,prefix, "news_report.txt")
     print("News analysis completed.")
-
+    '''
     # Step 3: Research Team Debate
     print("Step 3: Running research team debate...")
     bull_researcher = create_bull_researcher(llm, "bull_memory", config)
