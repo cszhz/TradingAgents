@@ -12,10 +12,12 @@ from dotenv import load_dotenv
 from strands.models.openai import OpenAIModel
 from strands.models import BedrockModel
 from default_config import DEFAULT_CONFIG
+from default_config import *
 
 # Load environment variables
 load_dotenv()
 
+'''
 # Claude Model IDs (duplicated from default_config for convenience)
 CLAUDE_37_SONNET_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
 CLAUDE_4_SONNET_MODEL_ID = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
@@ -24,6 +26,7 @@ CLAUDE_35_HAIKU_MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
 CLAUDE_35_SONNET_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 NOVA_RPO_MODEL_ID = 'us.amazon.nova-pro-v1:0'
 NOVA_LITE_MODEL_ID = 'us.amazon.nova-lite-v1:0'
+'''
 
 # AWS Boto3 client configuration with timeouts and retries
 boto_client_config = Config(
@@ -51,9 +54,9 @@ def get_model(provider='bedrock', model_id=CLAUDE_37_SONNET_MODEL_ID, thinking=T
     if provider == "bedrock":
         # Create AWS session with credentials
         session = boto3.Session(
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-            region_name='us-west-2'
+            #aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+            #aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+            region_name='us-east-1'
         )
         
         # Configure thinking mode for supported models

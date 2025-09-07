@@ -17,6 +17,9 @@ CLAUDE_35_SONNET_MODEL_ID = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
 # Amazon Nova Model IDs
 NOVA_RPO_MODEL_ID = 'amazon.nova-pro-v1:0'
 NOVA_LITE_MODEL_ID = 'amazon.nova-lite-v1:0'
+NOVA_PREMIER_MODEL_ID = 'us.amazon.nova-premier-v1:0'
+
+
 
 DEFAULT_CONFIG = {
     # Directory settings
