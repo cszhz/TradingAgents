@@ -8,15 +8,15 @@ It includes LLM model configurations, API settings, debate parameters, and tool 
 import os
 
 # Claude Model IDs for AWS Bedrock
-CLAUDE_37_SONNET_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-CLAUDE_4_SONNET_MODEL_ID = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
-CLAUDE_4_OPUS_MODEL_ID = 'us.anthropic.claude-opus-4-20250514-v1:0'
-CLAUDE_35_HAIKU_MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
-CLAUDE_35_SONNET_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
+CLAUDE_37_SONNET_MODEL_ID = 'anthropic.claude-3-7-sonnet-20250219-v1:0'
+CLAUDE_4_SONNET_MODEL_ID = 'anthropic.claude-sonnet-4-20250514-v1:0'
+CLAUDE_4_OPUS_MODEL_ID = 'anthropic.claude-opus-4-20250514-v1:0'
+CLAUDE_35_HAIKU_MODEL_ID = 'anthropic.claude-3-5-haiku-20241022-v1:0'
+CLAUDE_35_SONNET_MODEL_ID = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
 
 # Amazon Nova Model IDs
-NOVA_RPO_MODEL_ID = 'us.amazon.nova-pro-v1:0'
-NOVA_LITE_MODEL_ID = 'us.amazon.nova-lite-v1:0'
+NOVA_RPO_MODEL_ID = 'amazon.nova-pro-v1:0'
+NOVA_LITE_MODEL_ID = 'amazon.nova-lite-v1:0'
 
 DEFAULT_CONFIG = {
     # Directory settings
@@ -35,8 +35,8 @@ DEFAULT_CONFIG = {
     
     # LLM provider and model settings
     "llm_provider": "bedrock",  # Options: "bedrock", "openai", "anthropic"
-    "deep_think_llm": CLAUDE_37_SONNET_MODEL_ID,  # Model for complex reasoning tasks
-    "quick_think_llm": CLAUDE_37_SONNET_MODEL_ID,  # Model for fast responses
+    "deep_think_llm": CLAUDE_35_HAIKU_MODEL_ID,  # Model for complex reasoning tasks
+    "quick_think_llm": CLAUDE_35_HAIKU_MODEL_ID,  # Model for fast responses
     "backend_url": "https://ark.cn-beijing.volces.com/api/v3/",  # Custom API endpoint
     
     # Embedding model settings
