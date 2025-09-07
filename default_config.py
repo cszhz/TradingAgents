@@ -27,10 +27,10 @@ DEFAULT_CONFIG = {
     "project_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
     "results_dir": os.getenv("TRADINGAGENTS_RESULTS_DIR", "./results"),
     "chromadb_path": os.path.abspath(os.path.join(os.path.dirname(__file__), "chroma")),
-    "data_dir": os.path.join(os.path.dirname(__file__), "dataflows/data_cache"),
+    "data_dir": os.path.join(os.path.dirname(__file__), "results/data_cache"),
     "data_cache_dir": os.path.join(
         os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
-        "dataflows/data_cache",
+        "results/data_cache",
     ),
     
     # Search MCP settings (tavily, exa, or other search providers)
