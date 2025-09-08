@@ -6,7 +6,16 @@ and discussions between different trading agents. It supports various coordinati
 modes for different types of agent interactions.
 """
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+from strands.multiagent import Swarm
+
+
+# Enable debug logs and print them to stderr
+logging.getLogger("strands.multiagent").setLevel(logging.DEBUG)
+logging.basicConfig(
+    format="%(levelname)s | %(name)s | %(message)s",
+    handlers=[logging.StreamHandler()]
+)
 
 
 class ConversationSwarm:
@@ -55,68 +64,50 @@ class ConversationSwarm:
             messages[agent.name] = []
         
         print(f"Starting {self.coordination} conversation with {len(self.agents)} agents...")
-        
-        # Phase 1: Initial parallel analysis by each specialized agent
-        print("Phase 1: Initial analysis by all agents...")
-        with ThreadPoolExecutor(max_workers=1) as executor:  # Avoid API throttling
-            # Submit tasks to all agents in parallel
-            future_to_agent = {executor.submit(agent, task): agent for agent in self.agents}
-            
-            # Collect results as they complete
-            for future in as_completed(future_to_agent):
-                agent = future_to_agent[future]
-                try:
-                    result = future.result()
-                    # Share this agent's result with all other agents
-                    for key in messages.keys():
-                        if key != agent.name:
-                            message = f"# Analysis from {agent.name}:\n<input>\n{result}\n</input>"
-                            messages[key].append(message)
-                            print(f"Shared {agent.name}'s analysis with {key}")
-                except Exception as exc:
-                    print(f'Agent {agent.name} generated an exception: {exc}')
-        
-        # Phase 2: Refinement phase - agents respond to each other's insights
-        print("Phase 2: Agent refinement and debate...")
-        
-        # Set coordination role based on strategy
-        if self.coordination == "collaborative":
-            role = "You are a Collaborative Agent - Focus on building upon others' insights and finding common ground"
-        elif self.coordination == "competitive":
-            role = "You are a Competitive Agent - Focus on challenging others' views and presenting unique solutions"
-        else:  # hybrid
-            role = "You are a Hybrid Agent - Balance cooperation and innovation, both supporting and challenging ideas"
-        
-        # Each agent refines their analysis based on others' input
-        for i, agent in enumerate(self.agents):
-            print(f"Agent {agent.name} refining analysis...")
-            
-            # Prepare prompt with original task and other agents' messages
-            other_messages = "\n\n".join(messages[agent.name])
-            prompt = (
-                f"{task}\n\n"
-                f"{role}\n\n"
-                f"Consider these analyses from other agents:\n"
-                f"<messages>\n{other_messages}\n</messages>\n\n"
-                f"Provide your refined analysis, addressing their points and strengthening your position."
-            )
-            
-            # Get refined analysis from agent
-            result = agent(prompt)
-            
-            # Share refined analysis with other agents and summarizer
-            for key in messages.keys():
-                if key != agent.name:
-                    refined_message = f"# Refined analysis from {agent.name}:\n<input>\n{result}\n</input>"
-                    messages[key].append(refined_message)
-            
-            print(f"Agent {agent.name} completed refinement")
-        
-        # Phase 3: Final synthesis by summarizer agent
-        print("Phase 3: Final synthesis and decision...")
+        # Create a swarm with these agents
+        swarm = Swarm(
+            self.agents,
+            max_handoffs=10,
+            max_iterations=10,
+            execution_timeout=2400.0,  # 15 minutes
+            node_timeout=600.0,       # 5 minutes per agent
+            repetitive_handoff_detection_window=8,  # There must be >= 3 unique agents in the last 8 handoffs
+            repetitive_handoff_min_unique_agents=5
+        )
+
+        # Execute the swarm on a task
+        print("Phase 1: Swarm conversation between bull reseacher and bear reseacher...")
+        result = swarm(task)
+
+        # Access the final result
+        print(f"Status: {result.status}")
+        print(f"Node history: {[node.node_id for node in result.node_history]}")
+
+        bull_history, bear_history = None, None
+        for message in self.agents[0].messages[::-1]:
+            if message["role"] != "assistant" or len(message["content"]) == 0:
+                continue
+            else:
+                print(message["content"])
+                for item in message["content"]:
+                    if "text" in item:
+                        bull_history = item["text"]
+                break
+
+        for message in self.agents[1].messages[::-1]:
+            if message["role"] != "assistant" or len(message["content"]) == 0:
+                continue
+            else:
+                print(message["content"])
+                for item in message["content"]:
+                    if "text" in item:
+                        bear_history = item["text"]
+                        # bear_history = message["content"]["text"]
+                break
+        print("Phase 2: Final synthesis and decision...")
         
         # Prepare all messages for the summarizer
-        all_messages = "\n\n".join(messages[self.summarizer_agent.name])
+        # all_messages = "\n\n".join(messages[self.summarizer_agent.name])
         
         summarizer_prompt = f"""
 Original Investment Analysis Task:
@@ -128,7 +119,11 @@ You have received comprehensive analyses from the research team. Please synthesi
 these inputs into a final investment decision and strategy:
 
 <team_analyses>
-{all_messages}
+Bull Reseacher: 
+{bull_history}
+
+Bear Reseacher:
+{bear_history}
 </team_analyses>
 
 Your synthesis should:
@@ -148,4 +143,4 @@ from the team while addressing any concerns or contradictions in their analyses.
         
         print("Conversation completed successfully!")
         
-        return final_solution, messages
+        return final_solution, bull_history, bear_history

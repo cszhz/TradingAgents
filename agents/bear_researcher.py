@@ -7,8 +7,6 @@ while countering bullish arguments with data-driven analysis.
 """
 
 from strands import Agent
-from tools.memory import get_financial_situation_memories
-
 
 def create_bear_researcher(llm, memory, config):
     """
@@ -92,21 +90,20 @@ def create_bear_researcher(llm, memory, config):
         5. Focus on downside protection and risk management
         6. Provide alternative scenarios and stress testing
 
-        **Tools Available:**
-        - get_financial_situation_memories: Retrieve past market lessons and risk assessments
-        - Note: Do NOT use add_financial_situation_memories during debates
+        **Hand-off Guidelines:**
+        - You should first give your own analysis.
+        - If another researcher hasn't provided the final/completed analysis, you can directly hand off to the relevant researcher when you need to.
 
         Remember: Your goal is to provide essential risk perspective and protect against 
         overoptimistic investment decisions while maintaining analytical integrity.
+
+        Need to Write your final analysis!
         """
     )
-
-    tools = [get_financial_situation_memories]
 
     # Create and configure the agent
     agent = Agent(
         model=llm,
-        tools=tools,
         name="Bear Researcher",
         callback_handler=None,  # Disabled for parallel execution in debates
         system_prompt=system_message,
